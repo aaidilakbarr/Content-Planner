@@ -38,7 +38,12 @@ export async function seedDatabaseIfEmpty() {
       tags: ['coding', 'webdev', 'pemula'],
       notes: 'Artikel ini sudah publish di blog utama. Share link ke Twitter/Instagram nanti.',
       createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
+      updatedAt: now.toISOString(),
+      pillar: 'Edukasi',
+      targetViews: 1000,
+      actualViews: 1250,
+      targetLikes: 100,
+      actualLikes: 120
     },
     {
       title: 'A Day in the Life of a Software Engineer in Jakarta',
@@ -49,7 +54,10 @@ export async function seedDatabaseIfEmpty() {
       tags: ['wfh', 'vlog', 'programmer'],
       notes: 'Edit video sudah 80%. Butuh bikin thumbnail yang lebih eye-catching.',
       createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
+      updatedAt: now.toISOString(),
+      pillar: 'Personal',
+      targetViews: 5000,
+      targetLikes: 400
     },
     {
       title: 'Kenapa CSS Grid Lebih Baik dari Flexbox? (Dalam 60 Detik)',
@@ -60,7 +68,10 @@ export async function seedDatabaseIfEmpty() {
       tags: ['css', 'frontend', 'tips'],
       notes: 'Siapkan script suara dan rekam layar vscode.',
       createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
+      updatedAt: now.toISOString(),
+      pillar: 'Edukasi',
+      targetViews: 8000,
+      targetLikes: 600
     },
     {
       title: 'My Complete Developer Setup 2026 🚀',
@@ -71,7 +82,10 @@ export async function seedDatabaseIfEmpty() {
       tags: ['setup', 'desksetup', 'productivity'],
       notes: 'Kumpulkan foto aesthetic dari setup meja di siang hari.',
       createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
+      updatedAt: now.toISOString(),
+      pillar: 'Promosi',
+      targetViews: 2000,
+      targetLikes: 150
     },
     {
       title: 'Membangun Aplikasi Offline-First dengan Dexie.js',
@@ -82,7 +96,44 @@ export async function seedDatabaseIfEmpty() {
       tags: ['javascript', 'react', 'indexeddb'],
       notes: 'Buat penjelasan visual alur IndexedDB.',
       createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
+      updatedAt: now.toISOString(),
+      pillar: 'Edukasi',
+      targetViews: 1500,
+      targetLikes: 80
+    },
+    {
+      title: 'Desain Glassmorphism dengan Tailwind CSS v4',
+      description: 'Video pendek tips coding membuat layout dashboard futuristik transparan dengan blur filter kelas dunia.',
+      platform: 'tiktok',
+      status: 'published',
+      scheduledDate: formatDate(-1),
+      publishedDate: formatDate(-1),
+      tags: ['tailwind', 'css', 'design'],
+      notes: 'Sangat ramai di kolom komentar. Jawab beberapa pertanyaan teknis.',
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+      pillar: 'Hiburan',
+      targetViews: 10000,
+      actualViews: 11400,
+      targetLikes: 800,
+      actualLikes: 950
+    },
+    {
+      title: 'Strategi Konsisten Konten untuk Developer 2026',
+      description: 'Berbagi tips bagaimana membagi waktu antara menulis kode produksi dan membuat aset konten berkualitas.',
+      platform: 'instagram',
+      status: 'published',
+      scheduledDate: formatDate(-2),
+      publishedDate: formatDate(-2),
+      tags: ['creator', 'developer', 'tips'],
+      notes: 'Postingan slide edukasi carousel.',
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+      pillar: 'Personal',
+      targetViews: 3000,
+      actualViews: 3400,
+      targetLikes: 250,
+      actualLikes: 310
     }
   ];
 

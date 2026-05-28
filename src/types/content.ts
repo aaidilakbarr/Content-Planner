@@ -15,6 +15,13 @@ export interface ContentItem {
   notes?: string;
   createdAt: string; // ISO String
   updatedAt: string; // ISO String
+
+  // KPI & Pilar Konten fields
+  pillar?: 'Edukasi' | 'Hiburan' | 'Promosi' | 'Personal' | 'Lainnya';
+  targetViews?: number;
+  targetLikes?: number;
+  actualViews?: number;
+  actualLikes?: number;
 }
 
 export interface PlatformConfig {

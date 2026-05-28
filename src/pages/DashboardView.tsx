@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../lib/db';
 import { useContentStore } from '../store/contentStore';
@@ -13,7 +13,8 @@ import {
   ResponsiveContainer,
   PieChart as RechartsPieChart,
   Pie,
-  Cell
+  Cell,
+  Legend
 } from 'recharts';
 import { 
   Layers, 
@@ -22,15 +23,30 @@ import {
   Calendar, 
   TrendingUp, 
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  Target,
+  Settings,
+  PieChart as PieIcon
 } from 'lucide-react';
 
 export const DashboardView: React.FC = () => {
   const { openViewModal } = useContentStore();
 
-
   // Query live data from IndexedDB
   const contents = useLiveQuery(() => db.contents.toArray()) ?? [];
+
+  // Local storage for weekly publication targets
+  const [targets, setTargets] = useState<Record<ContentPlatform, number>>(() => {
+    const saved = localStorage.getItem('weekly_publication_targets');
+    return saved ? JSON.parse(saved) : { instagram: 3, youtube: 1, tiktok: 2, blog: 1, twitter: 2 };
+  });
+  const [isEditingTargets, setIsEditingTargets] = useState(false);
+
+  const saveTarget = (platform: ContentPlatform, val: number) => {
+    const newTargets = { ...targets, [platform]: Math.max(0, val) };
+    setTargets(newTargets);
+    localStorage.setItem('weekly_publication_targets', JSON.stringify(newTargets));
+  };
 
   // Calculate statistics
   const total = contents.length;
@@ -42,6 +58,13 @@ export const DashboardView: React.FC = () => {
 
   const platformCounts = contents.reduce((acc, item) => {
     acc[item.platform] = (acc[item.platform] || 0) + 1;
+    return acc;
+  }, {} as Record<ContentPlatform, number>);
+
+  const platformPublishedCounts = contents.reduce((acc, item) => {
+    if (item.status === 'published') {
+      acc[item.platform] = (acc[item.platform] || 0) + 1;
+    }
     return acc;
   }, {} as Record<ContentPlatform, number>);
 
@@ -76,6 +99,37 @@ export const DashboardView: React.FC = () => {
       color: value.color
     };
   });
+
+  // Prepare chart data: KPI Target vs Actual Views
+  const kpiChartData = contents
+    .filter(item => item.status === 'published' && (item.targetViews !== undefined || item.actualViews !== undefined))
+    .map(item => ({
+      title: item.title.length > 20 ? item.title.slice(0, 20) + '...' : item.title,
+      Target: item.targetViews || 0,
+      Aktual: item.actualViews || 0
+    }))
+    .slice(-6); // Show last 6 published items with KPI
+
+  // Prepare chart data: Content Pillars distribution
+  const pillarCounts = contents.reduce((acc, item) => {
+    const p = item.pillar || 'Lainnya';
+    acc[p] = (acc[p] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const PILLAR_COLORS: Record<string, string> = {
+    Edukasi: '#6366f1',  // Indigo
+    Hiburan: '#ec4899',  // Pink
+    Promosi: '#f59e0b',  // Amber
+    Personal: '#10b981', // Emerald
+    Lainnya: '#64748b'   // Slate
+  };
+
+  const pillarChartData = Object.entries(pillarCounts).map(([name, value]) => ({
+    name,
+    value,
+    color: PILLAR_COLORS[name] || '#64748b'
+  })).filter(item => item.value > 0);
 
   const cards = [
     { 
@@ -183,11 +237,85 @@ export const DashboardView: React.FC = () => {
         })}
       </div>
 
+      {/* Target Volume Publication Progress Widget */}
+      <div className="glass-panel p-6 rounded-2xl border border-slate-800/80">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <Target className="w-5 h-5 text-indigo-400" />
+            <h2 className="text-slate-100 font-display font-bold text-sm tracking-wide">Target Volume Publikasi Mingguan</h2>
+          </div>
+          <button 
+            onClick={() => setIsEditingTargets(!isEditingTargets)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-350 rounded-xl transition cursor-pointer"
+          >
+            <Settings className="w-3.5 h-3.5" />
+            <span>{isEditingTargets ? 'Selesai Atur' : 'Atur Target'}</span>
+          </button>
+        </div>
+
+        {isEditingTargets ? (
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 bg-slate-950/20 p-4 border border-slate-800/60 rounded-xl animate-fade-in-up">
+            {Object.keys(PLATFORM_CONFIGS).map((key) => {
+              const p = key as ContentPlatform;
+              return (
+                <div key={p} className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-450 uppercase flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PLATFORM_CONFIGS[p].color }} />
+                    {PLATFORM_CONFIGS[p].label}
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targets[p]}
+                    onChange={(e) => saveTarget(p, Number(e.target.value))}
+                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500/30"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-5">
+            {Object.keys(PLATFORM_CONFIGS).map((key) => {
+              const p = key as ContentPlatform;
+              const pPub = platformPublishedCounts[p] || 0;
+              const pTar = targets[p] || 1;
+              const progress = Math.min(100, Math.round((pPub / pTar) * 100));
+              
+              return (
+                <div key={p} className="bg-slate-950/10 border border-slate-850/30 p-4 rounded-xl flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-[11px] font-semibold text-slate-400 capitalize">{PLATFORM_CONFIGS[p].label}</span>
+                      <span className="text-[10px] font-bold text-slate-500 bg-slate-950/40 px-1.5 py-0.5 rounded">
+                        {pPub}/{pTar}
+                      </span>
+                    </div>
+                    <div className="w-full bg-slate-800/40 rounded-full h-1.5 overflow-hidden">
+                      <div 
+                        className="h-1.5 rounded-full transition-all duration-500"
+                        style={{ 
+                          width: `${progress}%`,
+                          backgroundColor: PLATFORM_CONFIGS[p].color
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <span className="text-[9px] text-slate-500 mt-2 font-bold uppercase tracking-wider block text-right">
+                    {progress}% Target
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       {/* Main Analysis Section (Charts & Upcoming) */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         {/* Recharts Distributions */}
-        <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Status Breakdown BarChart */}
           <div className="glass-panel p-5 rounded-2xl border border-slate-800/80 flex flex-col h-[340px]">
             <div className="flex justify-between items-center mb-4">
@@ -197,14 +325,14 @@ export const DashboardView: React.FC = () => {
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart data={statusChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#64748b" fontSize={11} allowDecimals={false} tickLine={false} />
+                  <XAxis dataKey="name" stroke="#64748b" fontSize={10} tickLine={false} />
+                  <YAxis stroke="#64748b" fontSize={10} allowDecimals={false} tickLine={false} />
                   <Tooltip 
                     contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px' }}
-                    labelStyle={{ color: '#94a3b8', fontFamily: 'Inter', fontSize: '12px' }}
-                    itemStyle={{ color: '#fff', fontFamily: 'Inter', fontSize: '13px' }}
+                    labelStyle={{ color: '#94a3b8', fontFamily: 'Inter', fontSize: '11px' }}
+                    itemStyle={{ color: '#fff', fontFamily: 'Inter', fontSize: '12px' }}
                   />
-                  <Bar dataKey="jumlah" fill="#6366f1" radius={[6, 6, 0, 0]}>
+                  <Bar dataKey="jumlah" fill="#6366f1" radius={[4, 4, 0, 0]}>
                     {statusChartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} opacity={0.85} />
                     ))}
@@ -223,15 +351,15 @@ export const DashboardView: React.FC = () => {
             
             {platformChartData.length > 0 ? (
               <div className="flex-1 flex flex-col justify-center min-h-0">
-                <div className="h-52">
+                <div className="h-44">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
                       <Pie
                         data={platformChartData}
                         cx="50%"
                         cy="50%"
-                        innerRadius={60}
-                        outerRadius={80}
+                        innerRadius={50}
+                        outerRadius={65}
                         paddingAngle={3}
                         dataKey="value"
                       >
@@ -241,18 +369,18 @@ export const DashboardView: React.FC = () => {
                       </Pie>
                       <Tooltip 
                         contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px' }}
-                        itemStyle={{ color: '#fff', fontFamily: 'Inter', fontSize: '13px' }}
+                        itemStyle={{ color: '#fff', fontFamily: 'Inter', fontSize: '12px' }}
                       />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
                 
                 {/* Custom Legend to make it extra aesthetic */}
-                <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center mt-2 px-4">
+                <div className="flex flex-wrap gap-x-3 gap-y-1 justify-center mt-2 px-2">
                   {platformChartData.map((entry, idx) => (
-                    <div key={idx} className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
-                      <span className="text-[11px] text-slate-400 font-semibold">{entry.name} ({entry.value})</span>
+                    <div key={idx} className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
+                      <span className="text-[9px] text-slate-400 font-semibold">{entry.name} ({entry.value})</span>
                     </div>
                   ))}
                 </div>
@@ -261,6 +389,58 @@ export const DashboardView: React.FC = () => {
               <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-xs">
                 <AlertCircle className="w-7 h-7 text-slate-600 mb-2" />
                 <span>Belum ada data distribusi platform.</span>
+              </div>
+            )}
+          </div>
+
+          {/* Content Pillar Distribution PieChart */}
+          <div className="glass-panel p-5 rounded-2xl border border-slate-800/80 flex flex-col h-[340px]">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-slate-100 font-display font-bold text-sm tracking-wide">Pilar Konten (Category Balance)</h3>
+              <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-semibold tracking-wide uppercase">Pilar</span>
+            </div>
+
+            {pillarChartData.length > 0 ? (
+              <div className="flex-1 flex flex-col justify-center min-h-0">
+                <div className="h-44">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart>
+                      <Pie
+                        data={pillarChartData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={65}
+                        paddingAngle={3}
+                        dataKey="value"
+                      >
+                        {pillarChartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px' }}
+                        itemStyle={{ color: '#fff', fontFamily: 'Inter', fontSize: '12px' }}
+                      />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                </div>
+                
+                {/* Custom Legend for Content Pillars */}
+                <div className="flex flex-wrap gap-x-3 gap-y-1 justify-center mt-2 px-2">
+                  {pillarChartData.map((entry, idx) => (
+                    <div key={idx} className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
+                      <span className="text-[9px] text-slate-400 font-semibold">{entry.name} ({entry.value})</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-xs py-8 text-center">
+                <PieIcon className="w-7 h-7 text-slate-650 mb-2" />
+                <span>Belum ada data pilar konten.</span>
+                <p className="text-[9px] text-slate-605 mt-1 max-w-[150px]">Atur Pilar Konten di modal edit rencana untuk memunculkan data.</p>
               </div>
             )}
           </div>
@@ -339,6 +519,42 @@ export const DashboardView: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Fitur 2: Chart Performa (Target vs. Actual Metrics) */}
+      <div className="glass-panel p-6 rounded-2xl border border-slate-800/80">
+        <div className="flex items-center gap-2 mb-6">
+          <TrendingUp className="w-5 h-5 text-indigo-400" />
+          <h2 className="text-slate-100 font-display font-bold text-sm tracking-wide">KPI Performa Konten: Target vs. Hasil Aktual (Penayangan)</h2>
+        </div>
+
+        {kpiChartData.length > 0 ? (
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsBarChart data={kpiChartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+                <XAxis dataKey="title" stroke="#64748b" fontSize={10} tickLine={false} />
+                <YAxis stroke="#64748b" fontSize={10} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px' }}
+                  labelStyle={{ color: '#94a3b8', fontFamily: 'Inter', fontSize: '11px' }}
+                  itemStyle={{ fontFamily: 'Inter', fontSize: '12px' }}
+                />
+                <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '11px', fontFamily: 'Inter' }} />
+                <Bar dataKey="Target" fill="#818cf8" radius={[4, 4, 0, 0]} opacity={0.8} />
+                <Bar dataKey="Aktual" fill="#34d399" radius={[4, 4, 0, 0]} opacity={0.9} />
+              </RechartsBarChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <div className="h-48 flex flex-col items-center justify-center text-slate-500 text-xs text-center py-6">
+            <TrendingUp className="w-8 h-8 text-slate-650 mb-2.5 animate-pulse" />
+            <span className="font-bold text-slate-400">Belum Ada Data KPI Performa</span>
+            <p className="text-slate-500 mt-1 max-w-xs leading-normal">
+              Isi data Target Views di rencana Anda, lalu ubah status ke <strong>Published</strong> dan masukkan Actual Views untuk memunculkan chart analisis.
+            </p>
+          </div>
+        )}
+      </div>
+
     </div>
   );
 };

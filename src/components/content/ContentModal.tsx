@@ -11,7 +11,8 @@ import {
   Trash2,
   Save,
   Eye,
-  Plus
+  Plus,
+  TrendingUp
 } from 'lucide-react';
 
 
@@ -28,6 +29,13 @@ export const ContentModal: React.FC = () => {
   const [notes, setNotes] = useState('');
   const [thumbnail, setThumbnail] = useState<string | undefined>(undefined);
   const [tags, setTags] = useState<string[]>([]);
+
+  // KPI & Pilar Konten states
+  const [pillar, setPillar] = useState<'Edukasi' | 'Hiburan' | 'Promosi' | 'Personal' | 'Lainnya'>('Lainnya');
+  const [targetViews, setTargetViews] = useState<string>('');
+  const [targetLikes, setTargetLikes] = useState<string>('');
+  const [actualViews, setActualViews] = useState<string>('');
+  const [actualLikes, setActualLikes] = useState<string>('');
 
   // Tag input temp state
   const [tagInput, setTagInput] = useState('');
@@ -46,6 +54,11 @@ export const ContentModal: React.FC = () => {
         setNotes(selectedItem.notes || '');
         setThumbnail(selectedItem.thumbnail);
         setTags(selectedItem.tags || []);
+        setPillar(selectedItem.pillar || 'Lainnya');
+        setTargetViews(selectedItem.targetViews !== undefined ? String(selectedItem.targetViews) : '');
+        setTargetLikes(selectedItem.targetLikes !== undefined ? String(selectedItem.targetLikes) : '');
+        setActualViews(selectedItem.actualViews !== undefined ? String(selectedItem.actualViews) : '');
+        setActualLikes(selectedItem.actualLikes !== undefined ? String(selectedItem.actualLikes) : '');
       } else {
         // Reset form for "create" mode
         setTitle('');
@@ -57,6 +70,11 @@ export const ContentModal: React.FC = () => {
         setNotes('');
         setThumbnail(undefined);
         setTags([]);
+        setPillar('Lainnya');
+        setTargetViews('');
+        setTargetLikes('');
+        setActualViews('');
+        setActualLikes('');
       }
     }
   }, [isModalOpen, selectedItem, modalMode]);
@@ -137,7 +155,12 @@ export const ContentModal: React.FC = () => {
       thumbnail,
       notes: notes.trim(),
       createdAt: selectedItem?.createdAt || nowIso,
-      updatedAt: nowIso
+      updatedAt: nowIso,
+      pillar,
+      targetViews: targetViews.trim() !== '' ? Number(targetViews) : undefined,
+      targetLikes: targetLikes.trim() !== '' ? Number(targetLikes) : undefined,
+      actualViews: actualViews.trim() !== '' ? Number(actualViews) : undefined,
+      actualLikes: actualLikes.trim() !== '' ? Number(actualLikes) : undefined
     };
 
     try {
@@ -285,6 +308,28 @@ export const ContentModal: React.FC = () => {
                 </div>
               </div>
 
+              {/* Pilar Konten select */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-400 tracking-wide uppercase">Pilar Konten (Content Pillar)</label>
+                {isViewMode ? (
+                  <div className="px-4 py-3 rounded-xl border border-slate-800 text-sm font-semibold text-slate-200 bg-slate-950/20">
+                    <span>{pillar}</span>
+                  </div>
+                ) : (
+                  <select
+                    value={pillar}
+                    onChange={(e) => setPillar(e.target.value as any)}
+                    className="w-full px-4 py-3 bg-slate-950/30 border border-slate-800 focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 rounded-xl text-sm text-slate-200 focus:outline-none transition-all"
+                  >
+                    {['Edukasi', 'Hiburan', 'Promosi', 'Personal', 'Lainnya'].map((p) => (
+                      <option key={p} value={p} className="bg-slate-900 text-slate-200">
+                        {p}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
               {/* Notes */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-400 tracking-wide uppercase">Catatan / Ide Pendukung</label>
@@ -398,6 +443,78 @@ export const ContentModal: React.FC = () => {
                         className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500/30"
                       />
                     )}
+                  </div>
+                )}
+              </div>
+
+              {/* KPI & Target Performa */}
+              <div className="space-y-3 bg-slate-950/20 p-4 border border-slate-800/60 rounded-xl">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 uppercase">
+                  <TrendingUp className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Target vs Hasil Performa</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-semibold text-slate-500 uppercase">Target Views</label>
+                    {isViewMode ? (
+                      <p className="text-sm font-medium text-slate-200">{targetViews || '-'}</p>
+                    ) : (
+                      <input
+                        type="number"
+                        placeholder="e.g. 5000"
+                        value={targetViews}
+                        onChange={(e) => setTargetViews(e.target.value)}
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500/30"
+                      />
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-semibold text-slate-500 uppercase">Target Likes</label>
+                    {isViewMode ? (
+                      <p className="text-sm font-medium text-slate-200">{targetLikes || '-'}</p>
+                    ) : (
+                      <input
+                        type="number"
+                        placeholder="e.g. 300"
+                        value={targetLikes}
+                        onChange={(e) => setTargetLikes(e.target.value)}
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500/30"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {(status === 'published' || actualViews || actualLikes) && (
+                  <div className="grid grid-cols-2 gap-3 pt-2.5 border-t border-slate-800/60">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-semibold text-slate-500 uppercase">Actual Views</label>
+                      {isViewMode ? (
+                        <p className="text-sm font-medium text-slate-200">{actualViews || '-'}</p>
+                      ) : (
+                        <input
+                          type="number"
+                          placeholder="e.g. 5420"
+                          value={actualViews}
+                          onChange={(e) => setActualViews(e.target.value)}
+                          className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500/30"
+                        />
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-semibold text-slate-500 uppercase">Actual Likes</label>
+                      {isViewMode ? (
+                        <p className="text-sm font-medium text-slate-200">{actualLikes || '-'}</p>
+                      ) : (
+                        <input
+                          type="number"
+                          placeholder="e.g. 340"
+                          value={actualLikes}
+                          onChange={(e) => setActualLikes(e.target.value)}
+                          className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500/30"
+                        />
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
