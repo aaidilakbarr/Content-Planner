@@ -24,6 +24,10 @@ interface ContentStoreState {
   openEditModal: (item: ContentItem) => void;
   openViewModal: (item: ContentItem) => void;
   closeModal: () => void;
+
+  // Theme preferences
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
 }
 
 export const useContentStore = create<ContentStoreState>((set) => ({
@@ -75,6 +79,15 @@ export const useContentStore = create<ContentStoreState>((set) => ({
   closeModal: () => set({
     isModalOpen: false,
     selectedItem: null
+  }),
+
+  // Theme management
+  theme: (localStorage.getItem('theme') as 'dark' | 'light') || 'dark',
+  toggleTheme: () => set((state) => {
+    const nextTheme = state.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', nextTheme);
+    return { theme: nextTheme };
   })
 }));
 export default useContentStore;
+

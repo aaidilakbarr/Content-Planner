@@ -111,20 +111,20 @@ export const DashboardView: React.FC = () => {
   return (
     <div className="space-y-8 animate-fade-in-up">
       {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-slate-900 p-8 shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl banner-gradient p-8 shadow-xl">
         <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20"></div>
         
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-950/60 border border-indigo-800/40 text-indigo-300 text-xs font-semibold rounded-full shadow-inner">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-100/50 dark:bg-indigo-950/60 border border-indigo-200/50 dark:border-indigo-800/40 text-indigo-600 dark:text-indigo-300 text-xs font-semibold rounded-full shadow-inner">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Workspace Aktif</span>
             </div>
-            <h1 className="font-display font-bold text-2xl md:text-3xl text-white tracking-wide">
+            <h1 className="font-display font-bold text-2xl md:text-3xl text-[var(--text-banner-title)] tracking-wide">
               Kelola Konten Sosial Media Lebih Visual
             </h1>
-            <p className="text-sm text-slate-300 max-w-xl font-sans">
+            <p className="text-sm text-slate-400 max-w-xl font-sans">
               Selamat datang di pusat perencanaan konten Anda. Gunakan kalender visual atau Kanban board untuk mengatur jadwal rilis konten Anda secara offline-first.
             </p>
           </div>
@@ -135,7 +135,7 @@ export const DashboardView: React.FC = () => {
             <div className="relative flex items-center justify-center">
               {/* Semi circular SVG circle progression */}
               <svg className="w-24 h-24 transform -rotate-90">
-                <circle cx="48" cy="48" r="36" stroke="rgba(255,255,255,0.05)" strokeWidth="8" fill="transparent" />
+                <circle cx="48" cy="48" r="36" stroke="rgba(0,0,0,0.03)" strokeWidth="8" fill="transparent" />
                 <circle cx="48" cy="48" r="36" stroke="url(#gradient-progress)" strokeWidth="8" fill="transparent" 
                   strokeDasharray={226}
                   strokeDashoffset={226 - (226 * progressRate) / 100}
@@ -150,7 +150,7 @@ export const DashboardView: React.FC = () => {
                 </defs>
               </svg>
               <div className="absolute text-center">
-                <span className="text-xl font-bold font-display text-white">{progressRate}%</span>
+                <span className="text-xl font-bold font-display text-slate-100">{progressRate}%</span>
                 <p className="text-[9px] text-slate-500 font-semibold uppercase tracking-widest mt-0.5">Selesai</p>
               </div>
             </div>
@@ -171,7 +171,7 @@ export const DashboardView: React.FC = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <span className="text-xs font-semibold text-slate-400 tracking-wider uppercase">{card.label}</span>
-                  <h3 className="text-3xl font-display font-bold text-white mt-1.5">{card.value}</h3>
+                  <h3 className="text-3xl font-display font-bold text-slate-100 mt-1.5">{card.value}</h3>
                   <p className="text-[11px] text-slate-500 mt-1">{card.desc}</p>
                 </div>
                 <div className={`p-3 rounded-xl border ${card.colorClass}`}>
@@ -191,7 +191,7 @@ export const DashboardView: React.FC = () => {
           {/* Status Breakdown BarChart */}
           <div className="glass-panel p-5 rounded-2xl border border-slate-800/80 flex flex-col h-[340px]">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-white font-display font-bold text-sm tracking-wide">Status Distribusi</h3>
+              <h3 className="text-slate-100 font-display font-bold text-sm tracking-wide">Status Distribusi</h3>
               <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-semibold tracking-wide uppercase">Semua Konten</span>
             </div>
             <div className="flex-1 min-h-0">
@@ -217,7 +217,7 @@ export const DashboardView: React.FC = () => {
           {/* Platform Distribution PieChart */}
           <div className="glass-panel p-5 rounded-2xl border border-slate-800/80 flex flex-col h-[340px]">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-white font-display font-bold text-sm tracking-wide">Distribusi Platform</h3>
+              <h3 className="text-slate-100 font-display font-bold text-sm tracking-wide">Distribusi Platform</h3>
               <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-semibold tracking-wide uppercase">Aktif</span>
             </div>
             
@@ -269,7 +269,7 @@ export const DashboardView: React.FC = () => {
         {/* Upcoming content in 7 days list */}
         <div className="xl:col-span-4 glass-panel p-5 rounded-2xl border border-slate-800/80 flex flex-col h-[340px]">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-white font-display font-bold text-sm tracking-wide">Rilis Konten Terdekat</h3>
+            <h3 className="text-slate-100 font-display font-bold text-sm tracking-wide">Rilis Konten Terdekat</h3>
             <span className="text-[10px] bg-indigo-950 text-indigo-400 border border-indigo-900/50 px-2 py-0.5 rounded font-semibold tracking-wide uppercase">7 Hari Depan</span>
           </div>
 

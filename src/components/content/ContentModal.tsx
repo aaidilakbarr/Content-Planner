@@ -171,13 +171,13 @@ export const ContentModal: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <span className={`w-2.5 h-2.5 rounded-full bg-gradient-to-tr ${isViewMode ? 'from-emerald-400 to-teal-400' : modalMode === 'edit' ? 'from-amber-400 to-orange-400' : 'from-indigo-500 to-purple-500'
               }`} />
-            <h3 className="text-white font-display font-bold text-lg">
+            <h3 className="text-slate-100 font-display font-bold text-lg">
               {isViewMode ? 'Detail Konten' : modalMode === 'edit' ? 'Edit Rencana Konten' : 'Buat Rencana Baru'}
             </h3>
           </div>
           <button
             onClick={closeModal}
-            className="text-slate-400 hover:text-white bg-slate-800/40 p-1.5 rounded-lg hover:bg-slate-800 transition"
+            className="text-slate-400 hover:text-slate-100 bg-slate-800/40 p-1.5 rounded-lg hover:bg-slate-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -193,14 +193,14 @@ export const ContentModal: React.FC = () => {
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-400 tracking-wide uppercase">Judul Rencana Konten</label>
                 {isViewMode ? (
-                  <h2 className="text-xl font-bold text-white tracking-wide bg-slate-950/20 p-3 rounded-xl border border-slate-800/50">{title}</h2>
+                  <h2 className="text-xl font-bold text-slate-100 tracking-wide bg-slate-950/20 p-3 rounded-xl border border-slate-800/50">{title}</h2>
                 ) : (
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Contoh: 5 Tren Web Development di Tahun 2026..."
-                    className="w-full px-4 py-3 bg-slate-950/30 border border-slate-800 focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 rounded-xl text-sm text-white focus:outline-none transition-all placeholder-slate-600"
+                    className="w-full px-4 py-3 bg-slate-950/30 border border-slate-800 focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 rounded-xl text-sm text-slate-100 focus:outline-none transition-all placeholder-slate-500"
                     required
                   />
                 )}
@@ -211,7 +211,7 @@ export const ContentModal: React.FC = () => {
                 <label className="text-xs font-semibold text-slate-400 tracking-wide uppercase">Deskripsi / Brief Singkat</label>
                 {isViewMode ? (
                   <div className="text-sm text-slate-300 leading-relaxed bg-slate-950/20 p-4 rounded-xl border border-slate-800/50 whitespace-pre-line min-h-[100px]">
-                    {description || <span className="text-slate-600 italic">Tidak ada deskripsi.</span>}
+                    {description || <span className="text-slate-650 italic">Tidak ada deskripsi.</span>}
                   </div>
                 ) : (
                   <textarea
@@ -219,7 +219,7 @@ export const ContentModal: React.FC = () => {
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Tuliskan brief konten, sasaran audiens, atau poin-poin utama tulisan/video..."
                     rows={4}
-                    className="w-full px-4 py-3 bg-slate-950/30 border border-slate-800 focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 rounded-xl text-sm text-white focus:outline-none transition-all placeholder-slate-600 resize-y"
+                    className="w-full px-4 py-3 bg-slate-950/30 border border-slate-800 focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 rounded-xl text-sm text-slate-100 focus:outline-none transition-all placeholder-slate-500 resize-y"
                   />
                 )}
               </div>
@@ -290,7 +290,7 @@ export const ContentModal: React.FC = () => {
                 <label className="text-xs font-semibold text-slate-400 tracking-wide uppercase">Catatan / Ide Pendukung</label>
                 {isViewMode ? (
                   <div className="text-sm text-slate-300 leading-relaxed bg-slate-950/20 p-4 rounded-xl border border-slate-800/50 whitespace-pre-line min-h-[70px]">
-                    {notes || <span className="text-slate-600 italic">Tidak ada catatan tambahan.</span>}
+                    {notes || <span className="text-slate-650 italic">Tidak ada catatan tambahan.</span>}
                   </div>
                 ) : (
                   <textarea
@@ -298,7 +298,7 @@ export const ContentModal: React.FC = () => {
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Referensi riset, link pendukung, script suara, dsb..."
                     rows={3}
-                    className="w-full px-4 py-3 bg-slate-950/30 border border-slate-800 focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 rounded-xl text-sm text-white focus:outline-none transition-all placeholder-slate-600 resize-y"
+                    className="w-full px-4 py-3 bg-slate-950/30 border border-slate-800 focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 rounded-xl text-sm text-slate-100 focus:outline-none transition-all placeholder-slate-500 resize-y"
                   />
                 )}
               </div>
@@ -438,7 +438,7 @@ export const ContentModal: React.FC = () => {
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={handleAddTag}
                     placeholder="Ketik tag lalu tekan Enter..."
-                    className="w-full px-3.5 py-2.5 bg-slate-950/30 border border-slate-800 focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 rounded-xl text-xs text-white focus:outline-none transition-all placeholder-slate-600"
+                    className="w-full px-3.5 py-2.5 bg-slate-950/30 border border-slate-800 focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 rounded-xl text-xs text-slate-100 focus:outline-none transition-all placeholder-slate-500"
                   />
                 )}
               </div>

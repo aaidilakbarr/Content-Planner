@@ -35,7 +35,7 @@ export const Sidebar: React.FC = () => {
           <Sparkles className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="font-display font-bold text-lg text-white leading-tight tracking-wide flex items-center gap-1.5">
+          <h1 className="font-display font-bold text-lg text-slate-100 leading-tight tracking-wide flex items-center gap-1.5">
             Planner <span className="text-indigo-400 font-extrabold">Hub</span>
           </h1>
           <span className="text-[10px] text-slate-400 font-medium tracking-wider uppercase">Personal Content</span>
@@ -54,8 +54,8 @@ export const Sidebar: React.FC = () => {
               onClick={() => setActiveView(item.id)}
               className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-300 font-medium ${
                 isActive 
-                  ? 'bg-gradient-to-r from-indigo-600/20 to-purple-600/10 text-white border-l-4 border-indigo-500 shadow-md shadow-indigo-500/5' 
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50 hover:translate-x-1'
+                  ? 'bg-gradient-to-r from-indigo-600/10 to-purple-600/5 dark:from-indigo-600/20 dark:to-purple-600/10 text-indigo-600 dark:text-slate-100 border-l-4 border-indigo-500 shadow-md shadow-indigo-500/5' 
+                  : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 hover:translate-x-1'
               }`}
             >
               <Icon className={`w-5 h-5 transition-transform duration-300 ${isActive ? 'text-indigo-400 scale-110' : 'text-slate-500'}`} />
@@ -74,7 +74,7 @@ export const Sidebar: React.FC = () => {
         <div className="space-y-1.5 text-[11px] text-slate-400 font-sans">
           <div className="flex justify-between">
             <span>Total Konten:</span>
-            <span className="font-bold text-white bg-slate-800 px-1.5 py-0.5 rounded">{totalItems}</span>
+            <span className="font-bold text-slate-100 bg-slate-800 px-1.5 py-0.5 rounded">{totalItems}</span>
           </div>
           <div className="flex justify-between">
             <span>Telah Terbit:</span>

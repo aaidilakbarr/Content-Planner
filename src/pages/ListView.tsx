@@ -118,7 +118,7 @@ export const ListView: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-display font-bold text-xl text-white tracking-wide">Semua Rencana Konten</h1>
+            <h1 className="font-display font-bold text-xl text-slate-100 tracking-wide">Semua Rencana Konten</h1>
             <span className="text-[10px] bg-slate-800 text-indigo-400 border border-slate-700/80 px-2 py-0.5 rounded font-semibold uppercase tracking-wide">Daftar Workspace</span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
@@ -317,7 +317,7 @@ export const ListView: React.FC = () => {
                         <div className="flex items-center justify-center gap-2">
                           <button
                             onClick={() => openViewModal(item)}
-                            className="p-2 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition"
+                            className="p-2 hover:bg-slate-800 text-slate-400 hover:text-slate-100 rounded-lg transition"
                             title="Detail Rencana"
                           >
                             <Eye className="w-4 h-4" />
@@ -325,7 +325,7 @@ export const ListView: React.FC = () => {
                           
                           <button
                             onClick={() => openEditModal(item)}
-                            className="p-2 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition"
+                            className="p-2 hover:bg-slate-800 text-slate-400 hover:text-slate-100 rounded-lg transition"
                             title="Edit Rencana"
                           >
                             <Edit3 className="w-4 h-4" />

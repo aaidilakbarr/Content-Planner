@@ -10,12 +10,22 @@ import CalendarView from './pages/CalendarView';
 import ListView from './pages/ListView';
 
 export const App: React.FC = () => {
-  const { activeView } = useContentStore();
+  const { activeView, theme } = useContentStore();
 
   // Seed database with beautiful starter data on initial loading
   useEffect(() => {
     seedDatabaseIfEmpty();
   }, []);
+
+  // Sync light/dark class on document HTML tag
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
 
   const renderActiveView = () => {
     switch (activeView) {

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useContentStore } from '../../store/contentStore';
-import { Plus, Search, CalendarDays } from 'lucide-react';
+import { Plus, Search, CalendarDays, Sun, Moon } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { searchQuery, setSearchQuery, openCreateModal } = useContentStore();
+  const { searchQuery, setSearchQuery, openCreateModal, theme, toggleTheme } = useContentStore();
   const [greeting, setGreeting] = useState('Selamat Datang');
 
   useEffect(() => {
@@ -22,10 +22,10 @@ export const Navbar: React.FC = () => {
   });
 
   return (
-    <header className="h-20 border-b border-slate-800/80 bg-slate-950/20 backdrop-blur-md flex items-center justify-between px-8 fixed top-0 right-0 z-20 transition-all duration-300" style={{ left: '16rem', width: 'calc(100% - 16rem)' }}>
+    <header className="h-20 border-b border-slate-800 bg-slate-950/20 backdrop-blur-md flex items-center justify-between px-8 fixed top-0 right-0 z-20 transition-all duration-300" style={{ left: '16rem', width: 'calc(100% - 16rem)' }}>
       {/* Greetings */}
       <div>
-        <h2 className="text-white font-display font-bold text-lg leading-tight flex items-center gap-2">
+        <h2 className="text-slate-100 font-display font-bold text-lg leading-tight flex items-center gap-2">
           {greeting}, <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Creator</span>
         </h2>
         <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
@@ -39,7 +39,7 @@ export const Navbar: React.FC = () => {
         {/* Search Input */}
         <div className="relative w-72 max-w-xs group">
           <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Search className="w-4 h-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
+            <Search className="w-4 h-4 text-slate-450 group-focus-within:text-indigo-400 transition-colors" />
           </span>
           <input
             type="text"
@@ -49,6 +49,20 @@ export const Navbar: React.FC = () => {
             className="w-full pl-10 pr-4 py-2 bg-slate-900/60 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 focus:bg-slate-900 transition-all"
           />
         </div>
+
+        {/* Theme Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          type="button"
+          className="p-2 bg-slate-900 border border-slate-850 hover:bg-slate-800/80 rounded-xl text-slate-400 hover:text-slate-100 transition duration-300 transform active:scale-95 shadow-md flex items-center justify-center cursor-pointer"
+          title={theme === 'dark' ? 'Ganti ke Mode Terang' : 'Ganti ke Mode Gelap'}
+        >
+          {theme === 'dark' ? (
+            <Sun className="w-4.5 h-4.5 text-amber-400" />
+          ) : (
+            <Moon className="w-4.5 h-4.5 text-indigo-500" />
+          )}
+        </button>
 
         {/* Create Content Button */}
         <button
@@ -63,3 +77,4 @@ export const Navbar: React.FC = () => {
   );
 };
 export default Navbar;
+

@@ -98,7 +98,7 @@ export const KanbanView: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-display font-bold text-xl text-white tracking-wide">Status Kanban Board</h1>
+            <h1 className="font-display font-bold text-xl text-slate-100 tracking-wide">Status Kanban Board</h1>
             <span className="text-[10px] bg-slate-800 text-indigo-400 border border-slate-700/80 px-2 py-0.5 rounded font-semibold uppercase tracking-wide">Interactive DND</span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
@@ -135,7 +135,7 @@ export const KanbanView: React.FC = () => {
                 {/* Quick Add Button */}
                 <button
                   onClick={() => handleQuickAdd(col.status)}
-                  className="text-slate-500 hover:text-white p-1 hover:bg-slate-800 rounded-lg transition"
+                  className="text-slate-500 hover:text-slate-100 p-1 hover:bg-slate-800 rounded-lg transition"
                   title={`Tambah konten ${col.label}`}
                 >
                   <Plus className="w-4 h-4" />

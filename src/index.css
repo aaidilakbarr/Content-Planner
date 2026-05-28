@@ -1,13 +1,59 @@
 @import "tailwindcss";
 
+:root {
+  --bg-main: #f8fafc;
+  --bg-sidebar: rgba(255, 255, 255, 0.8);
+  --bg-navbar: rgba(248, 250, 252, 0.7);
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --border-glass: rgba(0, 0, 0, 0.06);
+  --border-glow: rgba(99, 102, 241, 0.06);
+  
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-title: #1e293b;
+  --bg-panel: rgba(255, 255, 255, 0.6);
+  --bg-slate-900: #ffffff;
+  --bg-slate-950: #f1f5f9;
+  --border-slate-800: #e2e8f0;
+  --border-slate-850: #cbd5e1;
+
+  /* Banner variables */
+  --gradient-banner-from: rgba(99, 102, 241, 0.08);
+  --gradient-banner-to: rgba(241, 245, 249, 0.8);
+  --text-banner-title: #1e293b;
+}
+
+html.dark {
+  --bg-main: #0b0f19;
+  --bg-sidebar: rgba(17, 24, 39, 0.45);
+  --bg-navbar: rgba(17, 24, 39, 0.2);
+  --bg-card: rgba(17, 24, 39, 0.7);
+  --border-glass: rgba(255, 255, 255, 0.06);
+  --border-glow: rgba(99, 102, 241, 0.15);
+  
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-title: #ffffff;
+  --bg-panel: rgba(17, 24, 39, 0.45);
+  --bg-slate-900: #111827;
+  --bg-slate-950: #020617;
+  --border-slate-800: #1e293b;
+  --border-slate-850: #1f2937;
+
+  /* Banner variables */
+  --gradient-banner-from: rgba(49, 46, 129, 0.4);
+  --gradient-banner-to: #0f172a;
+  --text-banner-title: #ffffff;
+}
+
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
   
-  --color-bg-dark: #0b0f19;
-  --color-bg-card: rgba(17, 24, 39, 0.7);
-  --color-border-glass: rgba(255, 255, 255, 0.06);
-  --color-border-glow: rgba(99, 102, 241, 0.15);
+  --color-bg-dark: var(--bg-main);
+  --color-bg-card: var(--bg-card);
+  --color-border-glass: var(--border-glass);
+  --color-border-glow: var(--border-glow);
   
   /* Platform Colors */
   --color-platform-instagram: #e1306c;
@@ -15,6 +61,18 @@
   --color-platform-tiktok: #00f2fe;
   --color-platform-blog: #f97316;
   --color-platform-twitter: #06b6d4;
+  
+  /* Additional Tailwind aliases to automatically map text & bg classes without rewriting! */
+  --color-slate-900: var(--bg-slate-900);
+  --color-slate-950: var(--bg-slate-950);
+  --color-slate-800: var(--border-slate-800);
+  --color-slate-850: var(--border-slate-850);
+  
+  /* Text mapping overrides for seamless light theme support */
+  --color-slate-100: var(--text-main);
+  --color-slate-200: var(--text-main);
+  --color-slate-300: var(--text-main);
+  --color-slate-400: var(--text-muted);
   
   /* Custom Animations */
   --animate-fade-in-up: fade-in-up 0.4s ease-out forwards;
@@ -38,24 +96,40 @@
 }
 
 ::-webkit-scrollbar-track {
+  background: rgba(11, 15, 25, 0.1);
+}
+
+html.dark ::-webkit-scrollbar-track {
   background: rgba(11, 15, 25, 0.5);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 9999px;
 }
 
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
 }
 
 /* Glassmorphism card utility */
 .glass-panel {
-  background: rgba(17, 24, 39, 0.45);
+  background: var(--bg-panel);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+}
+
+html.dark .glass-panel {
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
@@ -64,15 +138,29 @@
 }
 
 .glass-panel-interactive:hover {
-  background: rgba(17, 24, 39, 0.6);
+  background: var(--bg-card);
   border-color: rgba(99, 102, 241, 0.25);
-  box-shadow: 0 10px 40px 0 rgba(99, 102, 241, 0.1);
+  box-shadow: 0 10px 40px 0 rgba(99, 102, 241, 0.05);
   transform: translateY(-2px);
+}
+
+html.dark .glass-panel-interactive:hover {
+  box-shadow: 0 10px 40px 0 rgba(99, 102, 241, 0.1);
 }
 
 /* Glowing text */
 .text-glow {
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+}
+
+html.dark .text-glow {
   text-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+}
+
+/* Banner gradient utility */
+.banner-gradient {
+  background: linear-gradient(135deg, var(--gradient-banner-from), var(--gradient-banner-to));
+  border: 1px solid var(--border-glass);
 }
 
 /* Reset layout */
@@ -81,9 +169,10 @@ html, body, #root {
   padding: 0;
   min-height: 100vh;
   width: 100vw;
-  background-color: #0b0f19;
-  color: #f1f5f9;
+  background-color: var(--bg-main);
+  color: var(--text-main);
   font-family: var(--font-sans);
+  transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #root {
