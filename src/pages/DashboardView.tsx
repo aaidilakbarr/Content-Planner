@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../lib/db';
 import { useContentStore } from '../store/contentStore';
@@ -14,7 +14,7 @@ import {
   PieChart as RechartsPieChart,
   Pie,
   Cell,
-  Legend
+  CartesianGrid
 } from 'recharts';
 import { 
   Layers, 
@@ -71,14 +71,16 @@ export const DashboardView: React.FC = () => {
   const published = statusCounts['published'] || 0;
   const progressRate = total ? Math.round((published / total) * 100) : 0;
 
-  // Filter content upcoming in next 7 days
-  const todayStr = new Date().toISOString().split('T')[0];
-  const next7DaysStr = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-  
-  const upcomingContents = contents
-    .filter(item => item.scheduledDate >= todayStr && item.scheduledDate <= next7DaysStr && item.status !== 'published')
-    .sort((a, b) => a.scheduledDate.localeCompare(b.scheduledDate))
-    .slice(0, 4);
+  // Filter content upcoming in next 7 days (memoized to avoid impure render calls)
+  const upcomingContents = useMemo(() => {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const next7DaysStr = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    return contents
+      .filter(item => item.scheduledDate >= todayStr && item.scheduledDate <= next7DaysStr && item.status !== 'published')
+      .sort((a, b) => a.scheduledDate.localeCompare(b.scheduledDate))
+      .slice(0, 4);
+  }, [contents]);
 
   // Prepare chart data: Platform distribution
   const platformChartData = Object.keys(PLATFORM_CONFIGS).map(key => {
@@ -100,15 +102,7 @@ export const DashboardView: React.FC = () => {
     };
   });
 
-  // Prepare chart data: KPI Target vs Actual Views
-  const kpiChartData = contents
-    .filter(item => item.status === 'published' && (item.targetViews !== undefined || item.actualViews !== undefined))
-    .map(item => ({
-      title: item.title.length > 20 ? item.title.slice(0, 20) + '...' : item.title,
-      Target: item.targetViews || 0,
-      Aktual: item.actualViews || 0
-    }))
-    .slice(-6); // Show last 6 published items with KPI
+
 
   // Prepare chart data: Content Pillars distribution
   const pillarCounts = contents.reduce((acc, item) => {
@@ -314,141 +308,36 @@ export const DashboardView: React.FC = () => {
       {/* Main Analysis Section (Charts & Upcoming) */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
-        {/* Recharts Distributions */}
-        <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Status Breakdown BarChart */}
-          <div className="glass-panel p-5 rounded-2xl border border-slate-800/80 flex flex-col h-[340px]">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-slate-100 font-display font-bold text-sm tracking-wide">Status Distribusi</h3>
-              <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-semibold tracking-wide uppercase">Semua Konten</span>
-            </div>
-            <div className="flex-1 min-h-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <RechartsBarChart data={statusChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <XAxis dataKey="name" stroke="#64748b" fontSize={10} tickLine={false} />
-                  <YAxis stroke="#64748b" fontSize={10} allowDecimals={false} tickLine={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px' }}
-                    labelStyle={{ color: '#94a3b8', fontFamily: 'Inter', fontSize: '11px' }}
-                    itemStyle={{ color: '#fff', fontFamily: 'Inter', fontSize: '12px' }}
-                  />
-                  <Bar dataKey="jumlah" fill="#6366f1" radius={[4, 4, 0, 0]}>
-                    {statusChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} opacity={0.85} />
-                    ))}
-                  </Bar>
-                </RechartsBarChart>
-              </ResponsiveContainer>
-            </div>
+        {/* Status Breakdown BarChart */}
+        <div className="xl:col-span-8 glass-panel p-6 rounded-2xl border border-slate-800/80 flex flex-col h-[380px]">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-slate-100 font-display font-bold text-sm tracking-wide">Status Distribusi</h3>
+            <span className="text-[10px] bg-slate-800 text-slate-400 px-2.5 py-0.5 rounded font-semibold tracking-wide uppercase">Semua Konten</span>
           </div>
-
-          {/* Platform Distribution PieChart */}
-          <div className="glass-panel p-5 rounded-2xl border border-slate-800/80 flex flex-col h-[340px]">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-slate-100 font-display font-bold text-sm tracking-wide">Distribusi Platform</h3>
-              <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-semibold tracking-wide uppercase">Aktif</span>
-            </div>
-            
-            {platformChartData.length > 0 ? (
-              <div className="flex-1 flex flex-col justify-center min-h-0">
-                <div className="h-44">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
-                      <Pie
-                        data={platformChartData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={50}
-                        outerRadius={65}
-                        paddingAngle={3}
-                        dataKey="value"
-                      >
-                        {platformChartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px' }}
-                        itemStyle={{ color: '#fff', fontFamily: 'Inter', fontSize: '12px' }}
-                      />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </div>
-                
-                {/* Custom Legend to make it extra aesthetic */}
-                <div className="flex flex-wrap gap-x-3 gap-y-1 justify-center mt-2 px-2">
-                  {platformChartData.map((entry, idx) => (
-                    <div key={idx} className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
-                      <span className="text-[9px] text-slate-400 font-semibold">{entry.name} ({entry.value})</span>
-                    </div>
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsBarChart data={statusChartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                <XAxis dataKey="name" stroke="#64748b" fontSize={10} tickLine={false} />
+                <YAxis stroke="#64748b" fontSize={10} allowDecimals={false} tickLine={false} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px' }}
+                  labelStyle={{ color: '#94a3b8', fontFamily: 'Inter', fontSize: '11px' }}
+                  itemStyle={{ color: '#fff', fontFamily: 'Inter', fontSize: '12px' }}
+                />
+                <Bar dataKey="jumlah" fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={45}>
+                  {statusChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} opacity={0.85} />
                   ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-xs">
-                <AlertCircle className="w-7 h-7 text-slate-600 mb-2" />
-                <span>Belum ada data distribusi platform.</span>
-              </div>
-            )}
-          </div>
-
-          {/* Content Pillar Distribution PieChart */}
-          <div className="glass-panel p-5 rounded-2xl border border-slate-800/80 flex flex-col h-[340px]">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-slate-100 font-display font-bold text-sm tracking-wide">Pilar Konten (Category Balance)</h3>
-              <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-semibold tracking-wide uppercase">Pilar</span>
-            </div>
-
-            {pillarChartData.length > 0 ? (
-              <div className="flex-1 flex flex-col justify-center min-h-0">
-                <div className="h-44">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
-                      <Pie
-                        data={pillarChartData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={50}
-                        outerRadius={65}
-                        paddingAngle={3}
-                        dataKey="value"
-                      >
-                        {pillarChartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px' }}
-                        itemStyle={{ color: '#fff', fontFamily: 'Inter', fontSize: '12px' }}
-                      />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </div>
-                
-                {/* Custom Legend for Content Pillars */}
-                <div className="flex flex-wrap gap-x-3 gap-y-1 justify-center mt-2 px-2">
-                  {pillarChartData.map((entry, idx) => (
-                    <div key={idx} className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
-                      <span className="text-[9px] text-slate-400 font-semibold">{entry.name} ({entry.value})</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-xs py-8 text-center">
-                <PieIcon className="w-7 h-7 text-slate-650 mb-2" />
-                <span>Belum ada data pilar konten.</span>
-                <p className="text-[9px] text-slate-605 mt-1 max-w-[150px]">Atur Pilar Konten di modal edit rencana untuk memunculkan data.</p>
-              </div>
-            )}
+                </Bar>
+              </RechartsBarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
         {/* Upcoming content in 7 days list */}
-        <div className="xl:col-span-4 glass-panel p-5 rounded-2xl border border-slate-800/80 flex flex-col h-[340px]">
-          <div className="flex justify-between items-center mb-4">
+        <div className="xl:col-span-4 glass-panel p-6 rounded-2xl border border-slate-800/80 flex flex-col h-[380px]">
+          <div className="flex justify-between items-center mb-6">
             <h3 className="text-slate-100 font-display font-bold text-sm tracking-wide">Rilis Konten Terdekat</h3>
             <span className="text-[10px] bg-indigo-950 text-indigo-400 border border-indigo-900/50 px-2 py-0.5 rounded font-semibold tracking-wide uppercase">7 Hari Depan</span>
           </div>
@@ -520,40 +409,133 @@ export const DashboardView: React.FC = () => {
 
       </div>
 
-      {/* Fitur 2: Chart Performa (Target vs. Actual Metrics) */}
-      <div className="glass-panel p-6 rounded-2xl border border-slate-800/80">
-        <div className="flex items-center gap-2 mb-6">
-          <TrendingUp className="w-5 h-5 text-indigo-400" />
-          <h2 className="text-slate-100 font-display font-bold text-sm tracking-wide">KPI Performa Konten: Target vs. Hasil Aktual (Penayangan)</h2>
+      {/* Distribution Pie Charts side-by-side */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* Platform Distribution PieChart */}
+        <div className="glass-panel p-6 rounded-2xl border border-slate-800/80 flex flex-col h-[380px]">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-slate-100 font-display font-bold text-sm tracking-wide">Distribusi Platform</h3>
+            <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-semibold tracking-wide uppercase">Aktif</span>
+          </div>
+          
+          {platformChartData.length > 0 ? (
+            <div className="flex-1 flex flex-col justify-center min-h-0">
+              <div className="h-52 relative flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsPieChart>
+                    <Pie
+                      data={platformChartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={4}
+                      dataKey="value"
+                      stroke="#0f172a"
+                      strokeWidth={2}
+                    >
+                      {platformChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px' }}
+                      itemStyle={{ color: '#fff', fontFamily: 'Inter', fontSize: '12px' }}
+                    />
+                  </RechartsPieChart>
+                </ResponsiveContainer>
+
+                {/* Premium absolute center label */}
+                <div className="absolute flex flex-col items-center justify-center pointer-events-none">
+                  <span className="text-2xl font-bold font-display text-slate-100">{total}</span>
+                  <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Konten</span>
+                </div>
+              </div>
+              
+              {/* Custom Legend to make it extra aesthetic */}
+              <div className="flex flex-wrap gap-x-4 gap-y-1.5 justify-center mt-4 px-2">
+                {platformChartData.map((entry, idx) => (
+                  <div key={idx} className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
+                    <span className="text-xs text-slate-400 font-semibold">{entry.name} ({entry.value})</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-xs">
+              <AlertCircle className="w-7 h-7 text-slate-650 mb-2" />
+              <span>Belum ada data distribusi platform.</span>
+            </div>
+          )}
         </div>
 
-        {kpiChartData.length > 0 ? (
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <RechartsBarChart data={kpiChartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
-                <XAxis dataKey="title" stroke="#64748b" fontSize={10} tickLine={false} />
-                <YAxis stroke="#64748b" fontSize={10} tickLine={false} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px' }}
-                  labelStyle={{ color: '#94a3b8', fontFamily: 'Inter', fontSize: '11px' }}
-                  itemStyle={{ fontFamily: 'Inter', fontSize: '12px' }}
-                />
-                <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '11px', fontFamily: 'Inter' }} />
-                <Bar dataKey="Target" fill="#818cf8" radius={[4, 4, 0, 0]} opacity={0.8} />
-                <Bar dataKey="Aktual" fill="#34d399" radius={[4, 4, 0, 0]} opacity={0.9} />
-              </RechartsBarChart>
-            </ResponsiveContainer>
+        {/* Content Pillar Distribution PieChart */}
+        <div className="glass-panel p-6 rounded-2xl border border-slate-800/80 flex flex-col h-[380px]">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-slate-100 font-display font-bold text-sm tracking-wide">Pilar Konten (Category Balance)</h3>
+            <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-semibold tracking-wide uppercase">Pilar</span>
           </div>
-        ) : (
-          <div className="h-48 flex flex-col items-center justify-center text-slate-500 text-xs text-center py-6">
-            <TrendingUp className="w-8 h-8 text-slate-650 mb-2.5 animate-pulse" />
-            <span className="font-bold text-slate-400">Belum Ada Data KPI Performa</span>
-            <p className="text-slate-500 mt-1 max-w-xs leading-normal">
-              Isi data Target Views di rencana Anda, lalu ubah status ke <strong>Published</strong> dan masukkan Actual Views untuk memunculkan chart analisis.
-            </p>
-          </div>
-        )}
+
+          {pillarChartData.length > 0 ? (
+            <div className="flex-1 flex flex-col justify-center min-h-0">
+              <div className="h-52 relative flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsPieChart>
+                    <Pie
+                      data={pillarChartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={4}
+                      dataKey="value"
+                      stroke="#0f172a"
+                      strokeWidth={2}
+                    >
+                      {pillarChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px' }}
+                      itemStyle={{ color: '#fff', fontFamily: 'Inter', fontSize: '12px' }}
+                    />
+                  </RechartsPieChart>
+                </ResponsiveContainer>
+
+                {/* Premium absolute center label */}
+                <div className="absolute flex flex-col items-center justify-center pointer-events-none">
+                  <span className="text-2xl font-bold font-display text-slate-100">
+                    {Object.values(pillarCounts).reduce((a, b) => a + b, 0)}
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Pilar</span>
+                </div>
+              </div>
+              
+              {/* Custom Legend for Content Pillars */}
+              <div className="flex flex-wrap gap-x-4 gap-y-1.5 justify-center mt-4 px-2">
+                {pillarChartData.map((entry, idx) => (
+                  <div key={idx} className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
+                    <span className="text-xs text-slate-400 font-semibold">{entry.name} ({entry.value})</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-xs py-8 text-center">
+              <PieIcon className="w-7 h-7 text-slate-650 mb-2" />
+              <span>Belum ada data pilar konten.</span>
+              <p className="text-[9px] text-slate-605 mt-1 max-w-[150px]">Atur Pilar Konten di modal edit rencana untuk memunculkan data.</p>
+            </div>
+          )}
+        </div>
+
       </div>
+
+
 
     </div>
   );

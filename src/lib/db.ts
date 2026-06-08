@@ -39,11 +39,7 @@ export async function seedDatabaseIfEmpty() {
       notes: 'Artikel ini sudah publish di blog utama. Share link ke Twitter/Instagram nanti.',
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
-      pillar: 'Edukasi',
-      targetViews: 1000,
-      actualViews: 1250,
-      targetLikes: 100,
-      actualLikes: 120
+      pillar: 'Edukasi'
     },
     {
       title: 'A Day in the Life of a Software Engineer in Jakarta',
@@ -55,9 +51,7 @@ export async function seedDatabaseIfEmpty() {
       notes: 'Edit video sudah 80%. Butuh bikin thumbnail yang lebih eye-catching.',
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
-      pillar: 'Personal',
-      targetViews: 5000,
-      targetLikes: 400
+      pillar: 'Personal'
     },
     {
       title: 'Kenapa CSS Grid Lebih Baik dari Flexbox? (Dalam 60 Detik)',
@@ -69,9 +63,7 @@ export async function seedDatabaseIfEmpty() {
       notes: 'Siapkan script suara dan rekam layar vscode.',
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
-      pillar: 'Edukasi',
-      targetViews: 8000,
-      targetLikes: 600
+      pillar: 'Edukasi'
     },
     {
       title: 'My Complete Developer Setup 2026 🚀',
@@ -83,9 +75,7 @@ export async function seedDatabaseIfEmpty() {
       notes: 'Kumpulkan foto aesthetic dari setup meja di siang hari.',
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
-      pillar: 'Promosi',
-      targetViews: 2000,
-      targetLikes: 150
+      pillar: 'Promosi'
     },
     {
       title: 'Membangun Aplikasi Offline-First dengan Dexie.js',
@@ -97,9 +87,7 @@ export async function seedDatabaseIfEmpty() {
       notes: 'Buat penjelasan visual alur IndexedDB.',
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
-      pillar: 'Edukasi',
-      targetViews: 1500,
-      targetLikes: 80
+      pillar: 'Edukasi'
     },
     {
       title: 'Desain Glassmorphism dengan Tailwind CSS v4',
@@ -112,11 +100,7 @@ export async function seedDatabaseIfEmpty() {
       notes: 'Sangat ramai di kolom komentar. Jawab beberapa pertanyaan teknis.',
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
-      pillar: 'Hiburan',
-      targetViews: 10000,
-      actualViews: 11400,
-      targetLikes: 800,
-      actualLikes: 950
+      pillar: 'Hiburan'
     },
     {
       title: 'Strategi Konsisten Konten untuk Developer 2026',
@@ -129,11 +113,7 @@ export async function seedDatabaseIfEmpty() {
       notes: 'Postingan slide edukasi carousel.',
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
-      pillar: 'Personal',
-      targetViews: 3000,
-      actualViews: 3400,
-      targetLikes: 250,
-      actualLikes: 310
+      pillar: 'Personal'
     }
   ];
 

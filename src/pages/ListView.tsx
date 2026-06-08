@@ -95,8 +95,11 @@ export const ListView: React.FC = () => {
       try {
         const importedData = JSON.parse(event.target?.result as string);
         if (Array.isArray(importedData)) {
-          // Clean ID from imported items so Dexie auto-increments cleanly
-          const sanitizedItems = importedData.map(({ id, ...rest }) => rest);
+          const sanitizedItems = importedData.map((item) => {
+            const newItem = { ...item };
+            delete newItem.id;
+            return newItem;
+          });
           await db.contents.bulkAdd(sanitizedItems);
           alert(`Sukses mengimpor ${sanitizedItems.length} konten baru ke database!`);
         } else {

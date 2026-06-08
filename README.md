@@ -18,10 +18,10 @@ Sidebar di sisi kiri adalah pusat kendali Anda untuk berpindah antar halaman vis
 
 ## 🎨 Penjelasan Detail Fitur & Fungsi
 
-### 1. 📊 Dashboard Analitik & KPI
-Dashboard adalah pusat informasi strategis Anda untuk melihat performa dan target pembuatan konten secara real-time.
+### 1. 📊 Dashboard Analitik
+Dashboard adalah pusat informasi strategis Anda untuk melihat status dan kemajuan pembuatan konten secara real-time.
 
-* **KPI Stats (Top Cards)**: 
+* **Statistik Utama (Top Cards)**: 
   - **Total Rencana**: Seluruh ide konten yang tersimpan di dalam aplikasi.
   - **Telah Terbit**: Jumlah konten yang sudah berstatus *Published* (Live di platform).
   - **Sedang Proses**: Konten dalam tahap *Draft* & *In-Progress*.
@@ -34,8 +34,6 @@ Dashboard adalah pusat informasi strategis Anda untuk melihat performa dan targe
   - **Distribusi Platform (Pie Chart)**: Menganalisis sosial media mana yang paling sering Anda sasar.
 * **Pilar Konten (Content Pillar Balance Pie Chart)**:
   - **Fungsi**: Membantu Anda memantau pilar topik (*Edukasi, Hiburan, Promosi, Personal*) agar konten tetap seimbang dan bervariasi.
-* **KPI Performa: Target vs. Hasil Aktual (Views Chart)**:
-  - **Fungsi**: Menampilkan grafik batang ganda (*Recharts*) yang membandingkan estimasi **Target Views** dengan **Actual Views** dari konten yang telah terbit. Membantu Anda mengevaluasi konten mana yang berhasil melampaui target.
 
 ---
 
@@ -70,14 +68,12 @@ Daftar data lengkap dalam bentuk tabel tabular yang dilengkapi kendali penuh ata
 
 ---
 
-### 📝 5. Content Modal (Form Editor Rencana & Metrik Performa)
+### 📝 5. Content Modal (Form Editor Rencana)
 Jendela pop-up editor tempat Anda menggodok ide konten secara mendalam.
 
 * **Pilar Konten**: Pilih kategori pilar konten untuk melacak variasi topik Anda.
 * **Cover Thumbnail**: Klik **Pilih File** untuk mengunggah gambar sampul konten Anda (aplikasi otomatis mengompresi dan menyimpannya secara offline dalam format Base64).
-* **Target vs Hasil Performa**:
-  - Saat konten dalam tahap pengerjaan, masukkan perkiraan **Target Views** dan **Target Likes**.
-  - Begitu konten Anda terbit di platform nyata, ubah status rencana menjadi **Published** dan isilah kolom **Actual Views** dan **Actual Likes** untuk memicu visualisasi grafik di Dashboard.
+
 * **Kategori & Tags**: Ketik kata kunci (tag) lalu tekan **Enter** atau koma untuk mengelompokkan konten dengan tagar estetik.
 * **Catatan/Ide Pendukung**: Textarea luas untuk mencatat referensi riset, tautan pendukung, script narasi video, dsb.
 

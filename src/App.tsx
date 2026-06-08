@@ -10,7 +10,7 @@ import CalendarView from './pages/CalendarView';
 import ListView from './pages/ListView';
 
 export const App: React.FC = () => {
-  const { activeView, theme } = useContentStore();
+  const { activeView, theme, isModalOpen, selectedItem } = useContentStore();
 
   // Seed database with beautiful starter data on initial loading
   useEffect(() => {
@@ -43,13 +43,18 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-bg-dark flex select-none">
+    <div className="min-h-screen bg-bg-dark flex select-none relative overflow-hidden">
+      {/* Decorative background glow blobs for glassmorphism */}
+      <div className="absolute top-[10%] left-[20%] w-[380px] h-[380px] bg-indigo-500/8 dark:bg-indigo-500/10 rounded-full blur-[110px] pointer-events-none z-0" />
+      <div className="absolute bottom-[20%] right-[10%] w-[420px] h-[420px] bg-purple-500/8 dark:bg-purple-500/10 rounded-full blur-[130px] pointer-events-none z-0" />
+      <div className="absolute top-[60%] left-[5%] w-[320px] h-[320px] bg-teal-500/4 dark:bg-teal-500/6 rounded-full blur-[90px] pointer-events-none z-0" />
+
       {/* Sidebar - fixed left panel */}
       <Sidebar />
 
       {/* Main Workspace Frame */}
-      <div 
-        className="flex-1 flex flex-col min-h-screen pl-64 transition-all duration-300"
+      <div
+        className="flex-grow flex flex-col min-h-screen pl-64 transition-all duration-300 relative z-10"
       >
         {/* Navbar Header - fixed top */}
         <Navbar />
@@ -63,7 +68,7 @@ export const App: React.FC = () => {
       </div>
 
       {/* Global CRUD Modal */}
-      <ContentModal />
+      {isModalOpen && <ContentModal key={selectedItem?.id ?? (selectedItem?.scheduledDate ? `new-${selectedItem.scheduledDate}` : 'new')} />}
     </div>
   );
 };
